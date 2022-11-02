@@ -1,3 +1,3 @@
-string_1 = (set(str(input())))
-string_2 = (set(str(input())))
+string_1 = (set((input().split())))
+string_2 = (set((input().split())))
 print(string_1 & string_2)
