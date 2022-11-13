@@ -1,8 +1,19 @@
-dictionary = {'Иванов': 20, 'Сидоров': 68, 'Петров': 26, 'Смирнов': 68,'Решетников': 78,'Искандеров': 70,'Логиновский': 22}
-maximum = max(dictionary.values())
+dictionary = {'Ивановa': 20, 'Сидоровa': 68, 'Петровa': 67, 'Джигорханян': 68,'Решетниковa': 78,'Искандеров': 70,'Логиновский': 22}
+k = 0
+print("Хотите добавить данные ? \n 1) Да \n 2) Нет")
+if input() == "Да" or 1 or "да":
+    while k != 2:
+        print("Введите фамилию учащегося:")
+        key =str(input())
+        print("Введите колличество баллов учащегося:")
+        val = int(input())
+        dictionary[key] = val
+        print("Хотите еще добавить данные ? \n 1) Да \n 2) Нет")
+        k = int(input())
+
 minimum = min(dictionary.values())
 medium = sum(dictionary.values())/len(dictionary)
-
+maximum = max(dictionary.values())
 print(f"\nУчастники, балл которых выше среднего ({medium} - средний балл):")
 
 for key, val in dictionary.items():
