@@ -1,15 +1,15 @@
 dictionary = {'Ивановa': 20, 'Сидоровa': 68, 'Петровa': 67, 'Джигорханян': 68,'Решетниковa': 78,'Искандеров': 70,'Логиновский': 22}
-k = 0
 print("Хотите добавить данные ? \n 1) Да \n 2) Нет")
-if input() == "Да" or 1 or "да":
-    while k != 2:
+k = input()
+if k in "1 да Да ":
+    while not k in "нет Нет 1":
         print("Введите фамилию учащегося:")
         key =str(input())
         print("Введите колличество баллов учащегося:")
         val = int(input())
         dictionary[key] = val
         print("Хотите еще добавить данные ? \n 1) Да \n 2) Нет")
-        k = int(input())
+        k = (input())
 
 minimum = min(dictionary.values())
 medium = sum(dictionary.values())/len(dictionary)
