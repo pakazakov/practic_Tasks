@@ -1,0 +1,111 @@
+import sys
+
+def output_matrix(size, matrix):
+    for i in range(size):
+        for j in range(size):
+            print(str(matrix[i][j])+' ' , end="")
+        print()
+
+def search_big_zero(matrix):
+    zero_list_r = []
+    zero_list_c = []
+    index_r = index_c = mx_c = mx_r = 0
+
+    for i in range(len(matrix)):
+        zero_list_r.append(matrix[i].count(0))
+        zero_list_c.append([matrix[j][i] for j in range(len(matrix))].count(0))
+
+    for i in range(len(zero_list_r)-1):
+
+        if zero_list_r[i] < zero_list_r[i+1]:
+            index_r = i+1
+            mx_r = zero_list_r[i+1]
+
+    for i in range(len(zero_list_c)-1):
+        if zero_list_c[i] < zero_list_c[i+1]:
+            index_c = i+1
+            mx_c = zero_list_c[i + 1]
+            print(mx_c)
+
+    if mx_c >= mx_r:
+        return index_c, 'c'
+    else:
+        return index_r, 'r'
+
+
+def decomposition(matrix, x, y):
+    minor = [[0 for i in range(len(matrix)-1)] for j in range(len(matrix)-1)]
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            if i < x:
+                if j < y:
+                    minor[i][j] = matrix[i][j]
+                elif j > y:
+                    minor[i][j-1] = matrix[i][j]
+            elif i > x:
+                if j < y:
+                    minor[i-1][j] = matrix[i][j]
+                elif j > y:
+                    minor[i-1][j-1] = matrix[i][j]
+    return minor
+
+
+
+def Laplaces_method(matrix, size):
+    res = 0
+    if size == 1:
+        return matrix[0][0]
+    index, r_or_c = search_big_zero(matrix)
+    if matrix[index].count("0") == len(matrix) and r_or_c == "r":
+        return 0
+    if [matrix[j][index] for j in range(len(matrix))].count("0") == len(matrix) and r_or_c =="c":
+        return 0
+    print(f"Разложение матрицы по {index + 1} {'строке' if r_or_c == 'r' else 'столбцу'} ")
+    for i in range(len(matrix)):
+
+        if r_or_c == 'r':
+            i, j = index, i
+        elif r_or_c == 'c':
+            j = index
+
+        if matrix[i][j] != 0:
+
+            print(matrix[i][j])
+            output_matrix(len(decomposition(matrix, i, j)),decomposition(matrix, i, j))
+            r = (-1) ** (i + j) * matrix[i][j] * Laplaces_method(decomposition(matrix,i,j),len(matrix)-1)
+            res+= r
+    return res
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    file = open(sys.argv[1], "r", encoding="UTF-8")
+    matrix_and_size = file.read()
+    file.close()
+    n = int(matrix_and_size.split("\n")[0])
+    A = list(map(lambda x: x.split(), matrix_and_size.strip().split("\n")[1:]))
+    A = list(map(lambda x: list(map(int, x)),A))
+    print("Исходная матрица:")
+    print(n)
+    output_matrix(n, A)
+    print(Laplaces_method(A,n))
