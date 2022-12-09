@@ -7,7 +7,7 @@ if len(word)%2 == 0:
         steck.append(word.pop(0))
     while(len(steck) != 0):
         if steck.pop() != word.pop(0):
-            print("Не полиндром")
+            print("Не палиндром")
             bob = 0
             exit()
 
@@ -18,8 +18,8 @@ elif len(word)%2 != 0:
     word = word[1:]
     while(len(steck) != 0):
         if steck.pop() != word.pop(0):
-            print("Не полиндром")
+            print("Не палиндром")
             bob = 0
             exit()
 if bob == 1:
-    print("Полиндром")
+    print("Палиндром")
