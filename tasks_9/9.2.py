@@ -20,7 +20,7 @@ def gluing_sentences(str_s):
         arr += [s]
         s = ''
     return(arr)
-file = open("file_3.txt")
+file = open("file_2.txt")
 sentences = file.read()
 file.close()
 
