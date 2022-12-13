@@ -1,86 +1,47 @@
-import sys
-#Функция вывода матрицы
-def output_matrix(size, matrix):
-    for i in range(size):
-        for j in range(size):
-            print(str(matrix[i][j])+' ' , end="")
-        print()
-#Функция поиска строки\столбца с наибольшим колличеством нулей
-def search_big_zero(matrix):
-    zero_list_r = [] #Список, в котором будет храниться колличество нулей каждой строки(индекс относящийся к определенной строке в списке соответствует индексу этой строки в матрице)
-    zero_list_c = [] #Список, в котором будет храниться колличество нулей каждого столбца(индекс относящийся к определенному столбцу в списке соответствует индексу этого столбца в матрице)
 
-    index_r = index_c = mx_c = mx_r = 0
-
-    for i in range(len(matrix)):
-        zero_list_r.append(matrix[i].count(0))#Считаем колличество нулей в каждой строчке и добавляем это значение в список
-        zero_list_c.append([matrix[j][i] for j in range(len(matrix))].count(0))#Считаем колличество нулей в каждом столбце и добавляем это значение в список
-
-    for i in range(len(zero_list_r)-1): #Ищем индекс строки с наибольшим колличеством нулей и колличество нулей в этой строке
-        if zero_list_r[i] < zero_list_r[i+1]:
-            index_r = i+1
-            mx_r = zero_list_r[i+1]
-
-    for i in range(len(zero_list_c)-1):#Ищем индекс столбца с наибольшим колличеством нулей и колличество нулей в этом столбце
-        if zero_list_c[i] < zero_list_c[i+1]:
-            index_c = i+1
-            mx_c = zero_list_c[i + 1]
-
-    if mx_c >= mx_r:#Возвращаем индекс столбца\строки с наибольшим колличеством нулей и принадлежность индекса(к строке или столбцу)
-        return index_c, 'c'
-    else:
-        return index_r, 'r'
-
-#Функция разложения матрицы
-def decomposition(matrix, x, y):
-    minor = [[0 for i in range(len(matrix)-1)] for j in range(len(matrix)-1)] # Формируем матрицу, которая будет являться дополнительным минором
-    #Заполняем матрицу, исключая элементы строки и столбца
-    for i in range(len(matrix)):
-        for j in range(len(matrix)):
-            if i < x:
-                if j < y:
-                    minor[i][j] = matrix[i][j]
-                elif j > y:
-                    minor[i][j-1] = matrix[i][j]
-            elif i > x:
-                if j < y:
-                    minor[i-1][j] = matrix[i][j]
-                elif j > y:
-                    minor[i-1][j-1] = matrix[i][j]
-    return minor#Возвращаем дополнительный минор
+def strip_polynom(polynom):
+    polynom = polynom.replace(" ","")
+    summands =[]
+    summand = ''
+    coefs = []
+    for i in range(len(polynom)-1, -1, -1):
+        summand = polynom[i] + summand
+        if polynom[i] in "+-":
+            summands.append(summand)
+            summand = ''
+    summands.append(summand)
+    summands = list(reversed(summands))
+    if "" in summands:
+        summands.remove('')
+    if "^" in summands[0]:
+        for i in range(int(summands[0].split("^")[1])+1):
+            coefs.append('0')
+        if len(summands) >= 1 and "x" not in summands[-1]:
+            coefs[-1] = summands[-1]
+        elif len(summands) >= 1 and "x" in summands[-1] and "^" not in summands[-1]:
+            coefs[-2] = summands[-1].strip("x")
+        elif len(summands) > 1 and 
 
 
-#Функция рекурсивной формулы Лапласса
-def Laplaces_method(matrix, size):
-    res = 0
-    if size == 1:#Если матрица состоит из одного элемента, то возвращаем этот элемент
-        return matrix[0][0]
-    index, r_or_c = search_big_zero(matrix)
-    for i in range(len(matrix)):
 
-        if r_or_c == 'r':  #Определяем
-            i, j = index, i#принадлежность
-        elif r_or_c == 'c':#индекса
-            j = index
 
-        if matrix[i][j] != 0:
-            r = (-1) ** (i + j) * matrix[i][j] * Laplaces_method(decomposition(matrix,i,j),len(matrix)-1) #Рекурсивная формула Лапласса
-            res+= r
 
-    return res
+
+
+
+    return coefs,summands
+
+
+
+
+
+
+
 
 
 
 
 if __name__ == '__main__':
-    file = open(sys.argv[1], "r", encoding="UTF-8")
-    matrix_and_size = file.read()
-    file.close()
-    n = int(matrix_and_size.split("\n")[0])
-    A = list(map(lambda x: x.split(), matrix_and_size.strip().split("\n")[1:]))
-    A = B = C = list(map(lambda x: list(map(int, x)),A))
-    print("Исходная матрица:")
-    print(n)
-    output_matrix(n, A)
-    print("Определитель матрицы по рекурсивной формуле:")
-    print(Laplaces_method(A,n))
+    print("Введите многочлен:")
+    polynom_str = str(input())
+    print(strip_polynom(polynom_str))
