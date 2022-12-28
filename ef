@@ -1,10 +1,82 @@
+#Функция поиска наибольшего общего делителя
+def HOD(a ,b):
+    a, b = abs(a), abs(b)
+    while(a != b):
+        if a > b:
+            a -= b
+        else:
+            b -= a
+    return a
+
+#Функция поиска наименьшего общего кратного
+def HOK(a, b):
+    a, b = abs(a), abs(b)
+    m = a * b
+    while a != 0 and b != 0:
+        if a > b:
+            a %= b
+        else:
+            b %= a
+    return m // (a + b)
+
+#Функция перемножения рациональных чисел
+def fraction_mult(a, b):
+    if type(a) == int and type(b) == int:
+        return a*b
+    if type(a) == int and type(b) == list:
+        return [b[0]*a, b[1]]
+    if type(a) == list and type(b) == int:
+        return [a[0]*b, a[1]]
+    if type(a) == list and type(b) == list:
+        return [a[0]*b[0],a[1]*b[1]]
+
+#Функция сложения рациональных чисел
+def fraction_sum(a, b):
+    if type(a) == int and type(b) == int:
+        return a + b
+    if type(a) == int and type(b) == list:
+        return [b[0]+a*b[1],b[1]]
+    if type(a) == list and type(b) == int:
+        return [a[0]+b*a[1], a[1]]
+    if type(a) == list and type(b) == list:
+        return [a[0]*b[1] + b[0]*a[1], a[1]*b[1]]
+def fraction_sub(a, b):
+    if type(a) == int and type(b) == int:
+        return a - b
+    if type(a) == int and type(b) == list:
+        return [b[0]-a*b[1],b[1]]
+    if type(a) == list and type(b) == int:
+        return [a[0]-b*a[1], a[1]]
+    if type(a) == list and type(b) == list:
+        return [a[0]*b[1] - b[0]*a[1], a[1]*b[1]]
+
+
+#Функция сокращения дроби
+def fraction_dec(a):
+    if type(a) == list:
+        if a[0] != 0:
+            return [a[0]//HOD(a[0],a[1]),a[1]//HOD(a[0],a[1])]
+        else:
+            return 0
+    else:
+        return a
+
+#Функция создания рационального или целого числа из дроби(списка из двух элементов)
+def create_root(a):
+    if type(a) == int:
+        return str(a)
+    if type(a) == list:
+        if a[0]%a[1] == 0:
+            return str(a[0]//a[1])
+        else:
+            return str(a[0])+'/'+str(a[1])
 
 def strip_polynom(polynom):
-    polynom = polynom.replace(" ","")
+    polynom = polynom.replace(" ","") #Удаляем лишние пробелы,
     summands =[]
     summand = ''
     coefs = []
-    for i in range(len(polynom)-1, -1, -1):
+    for i in range(len(polynom)-1, -1, -1): #Отделяем слагаемые от многочлена и добавляем их в отдельный список
         summand = polynom[i] + summand
         if polynom[i] in "+-":
             summands.append(summand)
@@ -13,27 +85,164 @@ def strip_polynom(polynom):
     summands = list(reversed(summands))
     if "" in summands:
         summands.remove('')
-    if "^" in summands[0]:
-        for i in range(int(summands[0].split("^")[1])+1):
+    if "^" in summands[0]: #Создаем список с коэфициентами многочлена, если его степень выше второй
+        for i in range(int(summands[0].split("^")[1])+1):#Создаем нулевой список с коэфициентами, который дальше будем заполнять
             coefs.append('0')
-        if len(summands) >= 1 and "x" not in summands[-1]:
+        if len(summands) > 1 and "x" in summands[-2] and "^" not in summands[-2] and 'x' not in summands[-1]: #Добавляем в список коэфициенты первой и нулевой степени
+            coefs[-1], coefs[-2] = summands[-1], summands[-2].strip("x")
+            summands.pop(-1)
+            summands.pop(-1)
+        elif len(summands) >= 1 and "x" in summands[-1] and "^" not in summands[-1]: #Добавляем в список коэфициент второй степени, если коэфициент первой степени равен нулю
+            coefs[-2] = summands[-1].strip("x")
+            summands.pop(-1)
+        elif len(summands) >= 1 and "x" not in summands[-1]: #Добавляем в список коэфициент первой степени, если коэфициент второй степени равен нулю
             coefs[-1] = summands[-1]
+            summands.pop(-1)
+        summands = list(map(lambda x: x.split("x^"), summands))
+        for i in range(len(summands)):
+            if summands[i][0] != '' and summands[i][0] != "+" and summands[i][0] != '-':
+                coefs[-int(summands[i][1])-1] = summands[i][0]
+            elif summands[i][0] == '' or summands[i][0] == "+":
+                coefs[-int(summands[i][1]) - 1] = '1'
+            elif summands[i][0] == '-':
+                coefs[-int(summands[i][1]) - 1] = '-1'
+        for i in range(len(coefs)):
+            if coefs[i] =="+":
+                coefs[i] = "1"
+            elif coefs[i] =="-":
+                coefs[i] = "-1"
+    elif "^" not in summands[0] and "x" in summands[0]:
+        coefs = ['0', '0']
+        if len(summands) > 1 and "x" in summands[-2] and "^" not in summands[-2] and 'x' not in summands[-1]:
+            coefs[-1], coefs[-2] = summands[-1], summands[-2].strip("x")
         elif len(summands) >= 1 and "x" in summands[-1] and "^" not in summands[-1]:
             coefs[-2] = summands[-1].strip("x")
-        elif len(summands) > 1 and 
+        if coefs[0] == '' or coefs[0] == "+":
+            coefs[0] = '1'
+        elif coefs[0] == '-':
+            coefs[0] = '-1'
+    elif "x" not in summands[0]:
+        coefs = summands[0]
+    coefs = list(map(int, coefs))
+    return coefs
+
+#Функция нахождения производной многочлена
+def derivative(coefs_pol):
+    if len(coefs_pol) > 1:                     #Если старшая степеть многочлена больше нуля:
+        coefs_pol = list(reversed(coefs_pol))  #разворачиваем наши коефициентики, чтобы ндекс кoефициента в списке соответствовал его степени
+        for i in range(len(coefs_pol)):        #проходимся по списку с коефициентами
+            coefs_pol[i] = coefs_pol[i]*i      #Умножаем коефициент многочлена на соответствующую ему степень
+        coefs_pol.pop(0)                       #Удаляем коефицмент, который относится к нулевой степени
+    else:
+        coefs_pol[0] = 0                       #Если многочлен состоит только из константы, то его производной является нуль
+    return list(reversed(coefs_pol))           #Возвращаем список с коефициентами производной многочлена
 
 
+def rational_roots(coefs_pol):
+    divisors = []
+    div_max =[]
+    div_min = []
+    temp = []
+    if coefs_pol[-1] == 0:
+        divisors.append(0)
+    det_max = abs(coefs_pol[0])
+    for i in range(len(coefs_pol)-1, -1, -1):
+        if coefs_pol[i] != 0:
+            det_min = abs(coefs_pol[i])
+            break
+    for i in range(1,det_max+1):
+        if det_max%i == 0:
+            div_max.append(i)
+    for i in range(1,det_min+1):
+        if det_min%i == 0:
+            div_min.append(i)
+    for i in range(len(div_min)):
+        for j in range(len(div_max)):
+            divisors.append(fraction_dec([div_min[i],div_max[j]]))
+            divisors.append(fraction_dec([-div_min[i], div_max[j]]))
+    for i in range(len(divisors)):
+        if divisors[i] not in temp:
+            temp.append(divisors[i])
+    divisors = temp
+
+    return divisors
 
 
+def Gorner_scheme_search(coefs_pol, divisors):
+    temp = []
+    true_det = []
+    if len(coefs_pol) >1  and type(divisors[0]) == list :
+        for i in range(len(divisors)):
+            temp.append(coefs_pol[0])
+            for j in range(1,len(coefs_pol)):
+                temp.append(fraction_sum(fraction_mult(divisors[i],temp[-1]),coefs_pol[j]))
+            if temp[-1][0] == 0:
+                true_det.append(divisors[i])
+            temp = []
+    elif len(coefs_pol) > 1 and type(divisors[0]) == int:
+        true_det.append(divisors[0])
+        for i in range(1,len(divisors)):
+            temp.append(coefs_pol[0])
+            for j in range(1,len(coefs_pol)):
+                temp.append(fraction_sum(fraction_mult(divisors[i],temp[-1]),coefs_pol[j]))
+            if temp[-1][0] == 0:
+                true_det.append(divisors[i])
+        temp = []
 
+    return true_det
 
+def dec_pol(a):
+    c=0
+    if type(a[0]) == int:
+        for i in range(a[0],0,-1):
+            for j in range(len(a)):
+                if type(a[j]) == int:
+                    if a[j]%i == 0:
+                        c+=1
+                if type(a[j]) == list:
+                    if a[j][0]%i == 0 and a[j][1]%i ==0:
+                        c+=1
+            if c == len(a):
+                for j in range(len(a)):
+                    if type(a[j]) == int:
+                        a[j] = a[j]//i
+                    if type(a[j]) == list:
+                        a[j][0] = a[j][0]//i
+            c = 0
+    return list(map(fraction_dec,a))
 
+def Gorner_scheme_div(coefs_pol, true_det):
+    for i in range(len(true_det)):
+        flag_1 = 1
+        temp = []
+        while flag_1 != 0:
+            temp.append(coefs_pol[0])
+            for j in range(1,len(coefs_pol)):
+                temp.append(fraction_sum(fraction_mult(true_det[i],temp[-1]),coefs_pol[j]))
+            if len(temp) != 0 and type(temp[-1]) == list and temp[-1][0] != 0  :
+                flag_1 = 0
+            elif len(temp) != 0 and type(temp[-1]) == list and temp[-1][0] == 0:
+                coefs_pol = temp
+                coefs_pol.pop(-1)
+                temp = []
+            elif len(temp) == 0:
+                return temp
+            elif len(temp) ==1 and type(temp[0]) == int :
+                temp.pop(0)
+                return temp
+    if len(coefs_pol) != 0:
+        return dec_pol(coefs_pol)
+    else:
+        return coefs_pol
 
-    return coefs,summands
+def sub_polynom(a,b):
+    for i in range(len(a)):
+        b[i] = fraction_sub(a[i], b[i])
+    return b
 
-
-
-
+def div_polynom(a,b):
+    rem = a
+    while len(a) < len(b):
 
 
 
@@ -44,4 +253,23 @@ def strip_polynom(polynom):
 if __name__ == '__main__':
     print("Введите многочлен:")
     polynom_str = str(input())
-    print(strip_polynom(polynom_str))
+    print('Введите параметр точности аппроксимации:')
+    k = int(input())
+    if len(strip_polynom(polynom_str) ) == 1:
+        print("Это не многочлен")
+        exit()
+    coeffs = strip_polynom(polynom_str)
+    print("Значения рациональных корней:")
+    if len(coeffs) - coeffs.count(0)== 1:
+        print('x1=0')
+        exit()
+    rat_roots = Gorner_scheme_search(coeffs,rational_roots(coeffs))
+    coeffs = Gorner_scheme_div(coeffs,rat_roots)
+    count = 1
+    for i in range(len(rat_roots)):
+        print(f"x{count} =",create_root(rat_roots[i]))
+        count+=1
+    if len(coeffs) == 0:
+        exit()
+    print(rat_roots,coeffs)
+    print("Ряд Штурма:")
